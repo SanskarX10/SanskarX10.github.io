@@ -3,5 +3,15 @@
     "title": "Basics of Distillation",
     "date": "2024-08-01",
     "file": "posts/basics-of-distillation/README.md"
+  },
+    {
+    "title": "learning-dynamics",
+    "date": "2025-07-17",
+    "file": "posts/learning-dynamics/README.md"
+  },
+  {
+    "title": "physics-of-llms",
+    "date": "2024-10-10",
+    "file": "posts/physics-of-llms/README.md"
   }
 ]
