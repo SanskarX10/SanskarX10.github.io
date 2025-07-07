@@ -5,13 +5,23 @@
     "file": "posts/basics-of-distillation/README.md"
   },
     {
-    "title": "learning-dynamics",
+    "title": "Learning Dynamics in Finetuning",
     "date": "2025-07-17",
     "file": "posts/learning-dynamics/README.md"
   },
   {
-    "title": "physics-of-llms",
+    "title": "Physics of llms",
     "date": "2024-10-10",
     "file": "posts/physics-of-llms/README.md"
+  },
+   {
+    "title": "Notes: On KV cache",
+    "date": "2024-12-5",
+    "file": "posts/notes-on-kv-cache"
+  },
+ {
+    "title": "Notes: On Reasoning in Models",
+    "date": "2025-01-09",
+    "file": "posts/notes-on-reasoning-in-models/README.md"
   }
 ]
