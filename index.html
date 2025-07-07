@@ -3,416 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sanscar</title>
+    <title>sanscar - Notebook</title>
+
+    <!-- Libs for Icons, Math, Markdown, and Code Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.3/katex.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.3/katex.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.3/contrib/auto-render.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-color: #F8F5F2; /* Creamy white for the page */
+            --text-color: #3D3D3D; /* Dark gray for text */
+            --accent-color: #005A9C; /* A calm, deep blue */
+            --border-color: #EAEAEA;
+            --secondary-text-color: #777;
+            --code-bg-color: #f6f8fa;
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Lora', serif;
+        }
+
+        /* --- Basic Setup & Typography --- */
+        html {
+            scroll-behavior: smooth;
+        }
         body {
-            font-family: 'MS Sans Serif', Arial, sans-serif;
-            background-color: #c0c0c0;
-            color: #000;
+            font-family: var(--font-serif);
+            background-color: #EBEBEB; /* Neutral background for contrast */
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
-        }
-        .window {
-            background-color: #c0c0c0;
-            border: 2px solid #fff;
-            border-right-color: #808080;
-            border-bottom-color: #808080;
-            box-shadow: inset -1px -1px #404040, inset 1px 1px #dfdfdf;
-            padding: 2px;
-            margin-bottom: 20px;
-        }
-        .title-bar {
-            background: linear-gradient(90deg, #000080, #1084d0);
-            color: #fff;
-            padding: 3px 5px;
-            font-weight: bold;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            line-height: 1.7;
         }
-        .title-bar-text {
-            font-size: 12px;
-        }
-        .title-bar-controls button {
-            width: 16px;
-            height: 14px;
-            border: 1px solid #fff;
-            background-color: #c0c0c0;
-        }
-        .window-body {
-            padding: 10px;
+        .container {
             display: flex;
-            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--bg-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
-        .section {
-            background-color: #fff;
-            border: 1px solid #808080;
-            padding: 10px;
-            margin: 5px;
-            flex: 1 1 300px;
-        }
-        h2 {
-            font-size: 14px;
-            margin-top: 0;
-        }
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        li {
-            margin-bottom: 5px;
+        h1, h2, h3 {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            color: var(--text-color);
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.5px;
         }
         a {
-            color: #000080;
+            color: var(--accent-color);
             text-decoration: none;
+            transition: opacity 0.2s ease;
         }
         a:hover {
-            text-decoration: underline;
+            opacity: 0.8;
         }
-        #error-message {
-            background-color: #ffcccc;
-            border: 1px solid #ff0000;
-            color: #ff0000;
-            padding: 10px;
-            margin-top: 10px;
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 3rem 0;
+        }
+
+        /* --- Layout: Table of Contents (Left) & Content (Right) --- */
+        .table-of-contents {
+            width: 280px;
+            padding: 2rem;
+            border-right: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .table-of-contents h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+        }
+        .table-of-contents .subtitle {
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            color: var(--secondary-text-color);
+            margin-top: -1rem;
+            margin-bottom: 2rem;
+        }
+        .toc-nav ul, .social-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc-nav li a {
+            display: block;
+            padding: 0.6rem 0;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+        .toc-nav li a:hover {
+            color: var(--accent-color);
+        }
+        .social-links {
+            margin-top: 2rem;
+        }
+        .social-links li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            color: var(--secondary-text-color);
+        }
+
+        main.content {
+            flex-grow: 1;
+            padding: 1rem 3rem 3rem 3rem;
+            overflow-y: auto;
+        }
+        main.content section {
+            padding-top: 2rem;
+        }
+
+        /* --- Blog Post Styling --- */
+        .blog-post {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        .blog-post:last-child {
+            border-bottom: none;
+        }
+        .blog-post .title {
+            font-family: var(--font-sans);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem 0;
+        }
+        .blog-post .date {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            color: var(--secondary-text-color);
+            margin-bottom: 1rem;
+        }
+        .blog-post-content.hidden {
             display: none;
         }
         .expand-button {
-            background-color: #c0c0c0;
-            border: 1px solid #808080;
-            padding: 5px 10px;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--secondary-text-color);
+            padding: 0.5rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
             cursor: pointer;
-            margin-top: 10px;
+            border-radius: 4px;
+            margin-top: 1rem;
+            transition: all 0.2s ease;
         }
-        .hidden {
-            display: none;
+        .expand-button:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
-        .blog-post {
+
+        /* --- Learning Entries Styling --- */
+        #learnings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .learning-entry {
             background-color: #fff;
-            border: 1px solid #808080;
-            padding: 10px;
-            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 6px;
         }
-        .blog-title {
-            font-weight: bold;
-            margin-bottom: 5px;
+        .learning-entry h3 {
+            font-size: 1rem;
+            margin: 0 0 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
         }
-        .blog-date {
-            font-size: 0.8em;
-            color: #808080;
-            margin-bottom: 5px;
+        .learning-entry ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
         }
-        .blog-content {
-            margin-top: 10px;
+        .learning-entry li {
+            padding-bottom: 0.5rem;
         }
-        .blog-full-content {
-            margin-top: 10px;
+        
+        /* --- General Content Styling (for Markdown) --- */
+        .blog-post-content h1, .blog-post-content h2, .blog-post-content h3 {
+            margin-top: 2rem;
         }
-        .blog-expand-button {
-            background-color: #c0c0c0;
-            border: 1px solid #808080;
-            padding: 2px 5px;
-            cursor: pointer;
-            margin-top: 5px;
+        .blog-post-content p {
+            margin-bottom: 1rem;
+        }
+        .blog-post-content pre {
+            background-color: var(--code-bg-color);
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+        .blog-post-content code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
             font-size: 0.9em;
+        }
+        .blog-post-content pre code {
+            background: none;
+            padding: 0;
+        }
+        .blog-post-content :not(pre) > code {
+            background-color: var(--code-bg-color);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+        .blog-post-content blockquote {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin-left: 0;
+            color: var(--secondary-text-color);
+            font-style: italic;
+        }
+        .blog-post-content img {
+            max-width: 100%;
+            border-radius: 6px;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1024px) {
+            .table-of-contents {
+                width: 220px;
+                padding: 1.5rem;
+            }
+            main.content {
+                padding: 1rem 2rem 2rem 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .container {
+                flex-direction: column;
+                box-shadow: none;
+            }
+            .table-of-contents {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1.5rem;
+            }
+            main.content {
+                padding: 1rem 1.5rem 2rem 1.5rem;
+            }
+            main.content section {
+                padding-top: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">Bio</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="section">
-                <p>you can call me sanskar, a passionate ml researcher, currently ml engineer @ ****** (maritime ai startup).</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">omw to be cracked</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
-            </div>
-        </div>
-        <div class="window-body">
-            <div class="section">
-                <h2>Things I'm Working On</h2>
+    <div class="container">
+        <!-- Left Column: Table of Contents -->
+        <aside class="table-of-contents">
+            <h1>sanscar's notebook</h1>
+            <p class="subtitle">ml researcher / engineer</p>
+            <nav class="toc-nav">
                 <ul>
-                    <li>custom linear algebra framework</li>
-                    <li>finding the best hybrid search</li>
-                    <li>efficient synthetic data creation</li>
-                    <li>custom physics embedding model</li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#learnings">Learnings</a></li>
+                    <li><a href="#recommended">Recommended</a></li>
                 </ul>
-            </div>
-            <div class="section">
-                <h2>Links</h2>
+            </nav>
+            <nav class="social-links">
                 <ul>
-                    <li><a href="https://www.linkedin.com/in/sanskarshrivastava/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
-                    <li><a href="https://github.com/SanskarX10"><i class="fab fa-github"></i> GitHub</a></li>
-                    <li><a href="/resume.pdf" download><i class="fas fa-file-alt"></i> Resume</a></li>
-                    <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                    <li><a href="https://www.linkedin.com/in/sanskarshrivastava/" target="_blank"><i class="fab fa-linkedin fa-fw"></i> LinkedIn</a></li>
+                    <li><a href="https://github.com/SanskarX10" target="_blank"><i class="fab fa-github fa-fw"></i> GitHub</a></li>
+                    <li><a href="/resume.pdf" download><i class="fas fa-file-alt fa-fw"></i> Resume</a></li>
                 </ul>
-            </div>
-        </div>
-    </div>
+            </nav>
+        </aside>
 
-    <div id="blog" class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">Blog Posts</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
-            </div>
-        </div>
-        <div class="window-body" id="blog-container">
-            <!-- Blog posts will be dynamically inserted here -->
-        </div>
-    </div>
+        <!-- Right Column: Main Content -->
+        <main class="content">
+            <section id="about">
+                <h2><i class="fas fa-user-circle"></i> About Me</h2>
+                <p>you can call me sanskar, a passionate ml researcher, currently ml engineer @ ****** (maritime ai startup). I created this space to document my learnings, distill complex topics, and share my work.</p>
+            </section>
+            
+            <hr />
 
-    <div id="learnings" class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">Shards of my brain.safetensors</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
-            </div>
-        </div>
-        <div class="window-body" id="entries-container">
-        </div>
-    </div>
+            <section id="projects">
+                <h2><i class="fas fa-flask"></i> Things I'm Working On</h2>
+                <ul>
+                    <li>A custom linear algebra framework from scratch.</li>
+                    <li>Researching optimal hybrid search techniques for retrieval.</li>
+                    <li>Building pipelines for efficient synthetic data creation.</li>
+                    <li>Developing a custom embedding model for physics-based data.</li>
+                </ul>
+            </section>
+            
+            <hr />
 
-    <div id="recommended" class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">Recommended Reading and Vids</div>
-            <div class="title-bar-controls">
-                <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
-                <button aria-label="Close"></button>
-            </div>
-        </div>
-        <div class="window-body" id="recommended-container">
-        </div>
-    </div>
+            <section id="blog">
+                <h2><i class="fas fa-feather-alt"></i> Blog Posts</h2>
+                <div id="blog-posts-container"></div>
+            </section>
+            
+            <hr />
 
-    <div id="error-message"></div>
+            <section id="learnings">
+                <h2><i class="fas fa-brain"></i> Shards of my brain.safetensors</h2>
+                <p>A log of daily learnings, discoveries, and moments of clarity.</p>
+                <div id="learnings-container"></div>
+            </section>
+
+            <hr />
+
+            <section id="recommended">
+                <h2><i class="fas fa-book-open"></i> Recommended Reading & Vids</h2>
+                <div id="recommended-container"></div>
+            </section>
+
+            <div id="error-message" style="display:none; background-color: #ffcccc; border: 1px solid #ff0000; color: #ff0000; padding: 10px; margin-top: 10px; border-radius: 6px;"></div>
+        </main>
+    </div>
 
     <script>
-        const entriesContainer = document.getElementById('entries-container');
-        const recommendedContainer = document.getElementById('recommended-container');
-        const blogContainer = document.getElementById('blog-container');
-        const errorMessage = document.getElementById('error-message');
+        document.addEventListener('DOMContentLoaded', () => {
+            const blogContainer = document.getElementById('blog-posts-container');
+            const learningsContainer = document.getElementById('learnings-container');
+            const recommendedContainer = document.getElementById('recommended-container');
+            const errorMessageDiv = document.getElementById('error-message');
 
-        // Configure marked and highlight.js for posts
-        marked.setOptions({
-            highlight: function(code, lang) {
-                if (lang && hljs.getLanguage(lang)) {
-                    return hljs.highlight(code, { language: lang }).value;
+            // --- Configuration for Libraries ---
+            marked.setOptions({
+                highlight: (code, lang) => {
+                    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return hljs.highlight(code, { language }).value;
                 }
-                return hljs.highlightAuto(code).value;
-            }
-        });
+            });
 
-        // Fetch blog posts from blog.json
-        fetch('blog.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(posts => {
-                if (posts.length === 0) {
-                    throw new Error('No blog posts found in the JSON file.');
-                }
-                return Promise.all(posts.map(async post => {
-                    const mdRes = await fetch(post.file);
-                    if (!mdRes.ok) {
-                        throw new Error(`Failed to load ${post.file}`);
-                    }
-                    const md = await mdRes.text();
-                    return {...post, md};
-                }));
-            })
-            .then(posts => {
-                posts.forEach(post => {
-                    const html = marked.parse(post.md);
-                    const tmp = document.createElement('div');
-                    tmp.innerHTML = html;
-                    const textContent = tmp.textContent || tmp.innerText || '';
-                    const isTruncated = textContent.length > 150;
+            const katexOptions = {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "\\[", right: "\\]", display: true }
+                ],
+                throwOnError: false // Prevents one error from stopping all rendering
+            };
+            
+            const showError = (message) => {
+                errorMessageDiv.textContent = message;
+                errorMessageDiv.style.display = 'block';
+                console.error(message);
+            };
 
-                    const postDiv = document.createElement('div');
-                    postDiv.classList.add('blog-post');
+            // --- Data Fetching and Rendering ---
+
+            // 1. Load Blog Posts
+            const loadBlogPosts = async () => {
+                try {
+                    const res = await fetch('blog.json');
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    const posts = await res.json();
                     
-                    if (isTruncated) {
-                        const truncatedContent = textContent.substring(0, 150) + '...';
-                        postDiv.innerHTML = `
-                            <div class="blog-title">${post.title}</div>
-                            <div class="blog-date">${post.date}</div>
-                            <div class="blog-content">${truncatedContent}</div>
-                            <button class="blog-expand-button">Read More</button>
-                            <div class="blog-full-content hidden" data-math-rendered="false">${html}</div>
-                        `;
-                    } else {
-                        // If not truncated, show the full content directly
-                        postDiv.innerHTML = `
-                            <div class="blog-title">${post.title}</div>
-                            <div class="blog-date">${post.date}</div>
-                            <div class="blog-content">${html}</div>
-                        `;
+                    if (!posts || posts.length === 0) {
+                        blogContainer.innerHTML = '<p>No blog posts found.</p>';
+                        return;
                     }
-                    
-                    blogContainer.appendChild(postDiv);
 
-                    if (isTruncated) {
-                        const expandButton = postDiv.querySelector('.blog-expand-button');
-                        const fullContent = postDiv.querySelector('.blog-full-content');
+                    const postPromises = posts.map(async (post) => {
+                        const mdRes = await fetch(post.file);
+                        if (!mdRes.ok) throw new Error(`Failed to load ${post.file}`);
+                        const md = await mdRes.text();
+                        return { ...post, md };
+                    });
+                    
+                    const postsWithContent = await Promise.all(postPromises);
+                    
+                    postsWithContent.forEach(post => {
+                        const postEl = document.createElement('div');
+                        postEl.className = 'blog-post';
                         
-                        expandButton.addEventListener('click', () => {
-                            const isNowHidden = fullContent.classList.toggle('hidden');
-                            expandButton.textContent = isNowHidden ? 'Read More' : 'Show Less';
+                        const fullHtml = marked.parse(post.md);
+                        
+                        postEl.innerHTML = `
+                            <h3 class="title">${post.title}</h3>
+                            <div class="date">${post.date}</div>
+                            <div class="blog-post-content hidden">${fullHtml}</div>
+                            <button class="expand-button">Read Post</button>
+                        `;
+                        
+                        blogContainer.appendChild(postEl);
+                        
+                        const button = postEl.querySelector('.expand-button');
+                        const content = postEl.querySelector('.blog-post-content');
+                        
+                        button.addEventListener('click', () => {
+                            const isHidden = content.classList.toggle('hidden');
+                            button.textContent = isHidden ? 'Read Post' : 'Show Less';
 
-                            // If we are showing the content and it hasn't been rendered yet
-                            if (!isNowHidden && fullContent.getAttribute('data-math-rendered') === 'false') {
-                                renderMathInElement(fullContent, {
-                                    delimiters: [
-                                        {left: "$$", right: "$$", display: true},
-                                        {left: "$", right: "$", display: false}
-                                    ]
-                                });
-                                // Highlight code in the expanded section
-                                hljs.highlightAllUnder(fullContent);
-                                fullContent.setAttribute('data-math-rendered', 'true');
+                            // Render math/code ONLY when first expanded
+                            if (!isHidden && !content.dataset.rendered) {
+                                renderMathInElement(content, katexOptions);
+                                content.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+                                content.dataset.rendered = 'true';
                             }
                         });
-                    } else {
-                        // For non-truncated posts, render math and code immediately.
-                        renderMathInElement(postDiv, {
-                            delimiters: [
-                                {left: "$$", right: "$$", display: true},
-                                {left: "$", right: "$", display: false}
-                            ]
-                        });
-                    }
-                });
-                // Highlight all initially visible code blocks.
-                hljs.highlightAll();
-            })
-            .catch(error => {
-                console.error('Error loading blog posts:', error);
-                errorMessage.textContent = `Error loading blog posts: ${error.message}`;
-                errorMessage.style.display = 'block';
-            });
-
-        // Fetch entries from entries.json
-        fetch('entries.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    });
+                } catch (error) {
+                    showError(`Error loading blog posts: ${error.message}`);
                 }
-                return response.json();
-            })
-            .then(entries => {
-                if (entries.length === 0) {
-                    throw new Error('No entries found in the JSON file.');
-                }
-                entries.forEach(entry => {
-                    const entryDiv = document.createElement('div');
-                    entryDiv.classList.add('section');
+            };
+            
+            // 2. Load Learning Entries
+            const loadLearnings = async () => {
+                try {
+                    const res = await fetch('entries.json');
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    const entries = await res.json();
                     
-                    let learningsHTML = '<ul>';
-                    entry.learning.forEach(item => {
-                        learningsHTML += `<li>${item}</li>`;
+                    if (!entries || entries.length === 0) {
+                        learningsContainer.innerHTML = '<p>No learning entries yet.</p>';
+                        return;
+                    }
+
+                    entries.reverse().forEach(entry => { // Show most recent first
+                        const entryEl = document.createElement('div');
+                        entryEl.className = 'learning-entry';
+                        
+                        const learningItems = entry.learning.map(item => `<li>${item}</li>`).join('');
+                        
+                        entryEl.innerHTML = `
+                            <h3>${entry.date}</h3>
+                            <ul>${learningItems}</ul>
+                        `;
+                        learningsContainer.appendChild(entryEl);
                     });
-                    learningsHTML += '</ul>';
-
-                    entryDiv.innerHTML = `
-                        <h2>${entry.date}</h2>
-                        ${learningsHTML}
-                    `;
-                    entriesContainer.appendChild(entryDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading entries:', error);
-                errorMessage.textContent = `Error loading entries: ${error.message}`;
-                errorMessage.style.display = 'block';
-            });
-
-        // Fetch recommended reading and videos
-        fetch('recommended.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                } catch (error) {
+                    showError(`Error loading learning entries: ${error.message}`);
                 }
-                return response.json();
-            })
-            .then(recommendations => {
-                if (recommendations.length === 0) {
-                    throw new Error('No recommendations found in the JSON file.');
-                }
-                
-                const recentRecommendations = recommendations.slice(-5);
-                const olderRecommendations = recommendations.slice(0, -5);
+            };
+            
+            // 3. Load Recommendations
+            const loadRecommendations = async () => {
+                try {
+                    const res = await fetch('recommended.json');
+                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                    const items = await res.json();
 
-                let recentHTML = '<ul>';
-                recentRecommendations.forEach(item => {
-                    recentHTML += `<li><a href="${item.url}" target="_blank">${item.title}</a></li>`;
-                });
-                recentHTML += '</ul>';
+                    if (!items || items.length === 0) {
+                        recommendedContainer.innerHTML = '<p>No recommendations yet.</p>';
+                        return;
+                    }
 
-                let olderHTML = '<ul class="hidden">';
-                olderRecommendations.forEach(item => {
-                    olderHTML += `<li><a href="${item.url}" target="_blank">${item.title}</a></li>`;
-                });
-                olderHTML += '</ul>';
-
-                const recommendedSection = document.createElement('div');
-                recommendedSection.classList.add('section');
-                recommendedSection.innerHTML = `
-                    <h2>Recent Recommendations</h2>
-                    ${recentHTML}
-                    <h2>Older Recommendations</h2>
-                    ${olderHTML}
-                    ${olderRecommendations.length > 0 ? '<button class="expand-button">Show All</button>' : ''}
-                `;
-
-                recommendedContainer.appendChild(recommendedSection);
-
-                if (olderRecommendations.length > 0) {
-                    const expandButton = recommendedSection.querySelector('.expand-button');
-                    const olderList = recommendedSection.querySelector('ul.hidden');
-
-                    expandButton.addEventListener('click', () => {
-                        olderList.classList.toggle('hidden');
-                        expandButton.textContent = olderList.classList.contains('hidden') ? 'Show All' : 'Hide Older';
+                    const list = document.createElement('ul');
+                    list.style.listStyle = 'none';
+                    list.style.padding = '0';
+                    items.forEach(item => {
+                        list.innerHTML += `<li style="margin-bottom: 0.75rem;"><a href="${item.url}" target="_blank">${item.title}</a></li>`;
                     });
+                    recommendedContainer.appendChild(list);
+                } catch (error) {
+                    showError(`Error loading recommendations: ${error.message}`);
                 }
-            })
-            .catch(error => {
-                console.error('Error loading recommendations:', error);
-                errorMessage.textContent = `Error loading recommendations: ${error.message}`;
-                errorMessage.style.display = 'block';
-            });
+            };
+
+            // --- Initialize Everything ---
+            loadBlogPosts();
+            loadLearnings();
+            loadRecommendations();
+        });
     </script>
 </body>
 </html>
