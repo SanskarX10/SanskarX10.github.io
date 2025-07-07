@@ -273,6 +273,18 @@
                         expandButton.addEventListener('click', () => {
                             fullContent.classList.toggle('hidden');
                             expandButton.textContent = fullContent.classList.contains('hidden') ? 'Read More' : 'Show Less';
+
+                            if (!fullContent.classList.contains('hidden')) {
+                                renderMathInElement(fullContent, {
+                                    delimiters: [
+                                        {left: "$$", right: "$$", display: true},
+                                        {left: "$", right: "$", display: false}
+                                    ]
+                                });
+                                fullContent.querySelectorAll('pre code').forEach(block => {
+                                    hljs.highlightElement(block);
+                                });
+                            }
                         });
                     }
 
