@@ -112,6 +112,9 @@
         .blog-content {
             margin-top: 10px;
         }
+        .blog-full-content {
+            margin-top: 10px;
+        }
         .blog-expand-button {
             background-color: #c0c0c0;
             border: 1px solid #808080;
@@ -180,6 +183,7 @@
             </div>
         </div>
         <div class="window-body" id="blog-container">
+            <!-- Blog posts will be dynamically inserted here -->
         </div>
     </div>
 
@@ -254,48 +258,63 @@
                     const tmp = document.createElement('div');
                     tmp.innerHTML = html;
                     const textContent = tmp.textContent || tmp.innerText || '';
-                    const truncatedContent = textContent.length > 150 ? textContent.substring(0, 150) + '...' : textContent;
+                    const isTruncated = textContent.length > 150;
 
                     const postDiv = document.createElement('div');
                     postDiv.classList.add('blog-post');
-                    postDiv.innerHTML = `
-                        <div class="blog-title">${post.title}</div>
-                        <div class="blog-date">${post.date}</div>
-                        <div class="blog-content">${truncatedContent}</div>
-                        ${textContent.length > 150 ? '<button class="blog-expand-button">Read More</button>' : ''}
-                        <div class="blog-full-content hidden">${html}</div>
-                    `;
+                    
+                    if (isTruncated) {
+                        const truncatedContent = textContent.substring(0, 150) + '...';
+                        postDiv.innerHTML = `
+                            <div class="blog-title">${post.title}</div>
+                            <div class="blog-date">${post.date}</div>
+                            <div class="blog-content">${truncatedContent}</div>
+                            <button class="blog-expand-button">Read More</button>
+                            <div class="blog-full-content hidden" data-math-rendered="false">${html}</div>
+                        `;
+                    } else {
+                        // If not truncated, show the full content directly
+                        postDiv.innerHTML = `
+                            <div class="blog-title">${post.title}</div>
+                            <div class="blog-date">${post.date}</div>
+                            <div class="blog-content">${html}</div>
+                        `;
+                    }
+                    
                     blogContainer.appendChild(postDiv);
 
-                    if (textContent.length > 150) {
+                    if (isTruncated) {
                         const expandButton = postDiv.querySelector('.blog-expand-button');
                         const fullContent = postDiv.querySelector('.blog-full-content');
+                        
                         expandButton.addEventListener('click', () => {
-                            fullContent.classList.toggle('hidden');
-                            expandButton.textContent = fullContent.classList.contains('hidden') ? 'Read More' : 'Show Less';
+                            const isNowHidden = fullContent.classList.toggle('hidden');
+                            expandButton.textContent = isNowHidden ? 'Read More' : 'Show Less';
 
-                            if (!fullContent.classList.contains('hidden')) {
+                            // If we are showing the content and it hasn't been rendered yet
+                            if (!isNowHidden && fullContent.getAttribute('data-math-rendered') === 'false') {
                                 renderMathInElement(fullContent, {
                                     delimiters: [
                                         {left: "$$", right: "$$", display: true},
                                         {left: "$", right: "$", display: false}
                                     ]
                                 });
-                                fullContent.querySelectorAll('pre code').forEach(block => {
-                                    hljs.highlightElement(block);
-                                });
+                                // Highlight code in the expanded section
+                                hljs.highlightAllUnder(fullContent);
+                                fullContent.setAttribute('data-math-rendered', 'true');
                             }
                         });
+                    } else {
+                        // For non-truncated posts, render math and code immediately.
+                        renderMathInElement(postDiv, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false}
+                            ]
+                        });
                     }
-
-                    renderMathInElement(postDiv, {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false}
-                        ]
-                    });
                 });
-
+                // Highlight all initially visible code blocks.
                 hljs.highlightAll();
             })
             .catch(error => {
@@ -374,18 +393,20 @@
                     ${recentHTML}
                     <h2>Older Recommendations</h2>
                     ${olderHTML}
-                    <button class="expand-button">Show All</button>
+                    ${olderRecommendations.length > 0 ? '<button class="expand-button">Show All</button>' : ''}
                 `;
 
                 recommendedContainer.appendChild(recommendedSection);
 
-                const expandButton = recommendedSection.querySelector('.expand-button');
-                const olderList = recommendedSection.querySelector('ul.hidden');
+                if (olderRecommendations.length > 0) {
+                    const expandButton = recommendedSection.querySelector('.expand-button');
+                    const olderList = recommendedSection.querySelector('ul.hidden');
 
-                expandButton.addEventListener('click', () => {
-                    olderList.classList.toggle('hidden');
-                    expandButton.textContent = olderList.classList.contains('hidden') ? 'Show All' : 'Hide Older';
-                });
+                    expandButton.addEventListener('click', () => {
+                        olderList.classList.toggle('hidden');
+                        expandButton.textContent = olderList.classList.contains('hidden') ? 'Show All' : 'Hide Older';
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error loading recommendations:', error);

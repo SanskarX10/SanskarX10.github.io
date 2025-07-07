@@ -1,4 +1,3 @@
-
 # Learning dynamics of LLM finetuning
 
 
@@ -10,35 +9,35 @@
 $$
 \begin{align*}
 % This is the Gradient Descent update rule for the model's parameters (theta).
-\Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_\theta(\mathbf{x}_u), \mathbf{y}_u) \\[1em]
+\Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_{\theta}(\mathbf{x}_{u}), \mathbf{y}_{u}) \\\\[1em]
 % This measures the change in the model's prediction on a different input (xo) after the update.
-\Delta f(\mathbf{x}_o) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_o) - f_{\theta^t}(\mathbf{x}_o)
+\Delta f(\mathbf{x}_{o}) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_{o}) - f_{\theta^t}(\mathbf{x}_{o})
 \end{align*}
 $$
 * After an GD update on xu​, how does the model's prediction on xo​ change?
 * for instance, model learns to map x to preds y = {y1, ...... y L} for all  
 $$
 \begin{array}{ll}
-{\textbf{Part 1: Supervised Learning Setup}} \\
-\text{Model Definition:} & h_\theta: \mathcal{X} \to \mathbb{R}^{V \times L} \\
-\text{Logits Generation:} & \mathbf{z} = h_\theta(\mathbf{x}) \in \mathbb{R}^{V \times L} \\
-\text{Output Prediction:} & \mathbf{y} = \{y_1, \dots, y_L\} \in \mathcal{V}^L \\
-& \quad \text{where } \mathcal{V} \text{ is the vocabulary of size } V \\
-\text{Probability Distribution:} & \pi_\theta(\mathbf{y} \mid \mathbf{x}) = \text{Softmax}(\mathbf{z}) \text{ (applied column-wise)} \\
-\text{Model Confidence Metric:} & \log \pi_\theta(\mathbf{y} \mid \mathbf{x}) \\[1em]
-{\textbf{Part 2: Per-step Influence Decomposition}} \\
-\text{Quantity of Interest:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_o) \\
-\text{Definition:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_o) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_o) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_o) \quad \text{(Equation 2)} \\
-\text{Where:} & \\
-\quad \theta_t & \text{Model parameters at training step } t \\
-\quad \theta_{t+1} & \text{Model parameters after one training step} \\
-\quad \mathbf{x}_o & \text{An ``observation'' input (data point whose confidence is being tracked)} \\
+{\textbf{Part 1: Supervised Learning Setup}} \\\\
+\text{Model Definition:} & h_{\theta}: \mathcal{X} \to \mathbb{R}^{V \times L} \\\\
+\text{Logits Generation:} & \mathbf{z} = h_{\theta}(\mathbf{x}) \in \mathbb{R}^{V \times L} \\\\
+\text{Output Prediction:} & \mathbf{y} = \{y_1, \dots, y_L\} \in \mathcal{V}^L \\\\
+& \quad \text{where } \mathcal{V} \text{ is the vocabulary of size } V \\\\
+\text{Probability Distribution:} & \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) = \text{Softmax}(\mathbf{z}) \text{ (applied column-wise)} \\\\
+\text{Model Confidence Metric:} & \log \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) \\[1em]
+{\textbf{Part 2: Per-step Influence Decomposition}} \\\\
+\text{Quantity of Interest:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \\\\
+\text{Definition:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_{o}) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_{o}) \quad \text{(Equation 2)} \\\\
+\text{Where:} & \\\\
+\quad \theta_t & \text{Model parameters at training step } t \\\\
+\quad \theta_{t+1} & \text{Model parameters after one training step} \\\\
+\quad \mathbf{x}_{o} & \text{An ``observation'' input (data point whose confidence is being tracked)} \\\\
 \end{array}
 $$
 * observation is change in log probability after one step of training
 * one step learning dynamic can be written as
 $$
-\Delta \log \pi^t(y \mid \mathbf{x}_o) = -\eta A^t(\mathbf{x}_o) K^t(\mathbf{x}_o, \mathbf{x}_u) G^t(\mathbf{x}_u, \mathbf{y}_u) + O(\eta^2 \|\nabla_\theta z(\mathbf{x}_u)\|^2_{\text{op}})
+\Delta \log \pi^t(y \mid \mathbf{x}_{o}) = -\eta A^t(\mathbf{x}_{o}) K^t(\mathbf{x}_{o}, \mathbf{x}_{u}) G^t(\mathbf{x}_{u}, \mathbf{y}_{u}) + O(\eta^2 \|\nabla_{\theta} z(\mathbf{x}_{u})\|^{2}_{\text{op}})
 $$
 *   G is the energy term, gradient of loss wrt logits for (xu, yu) if model is very wrong on a class, then this will be large
 *  K is the similarity term, or Empirical Neural Tangent Kernel {<span style="color:rgb(251, 177, 203)">appendix</span> <span style="color:rgb(251, 177, 203)">below</span>}, how aligned gradients for xo and xu are
@@ -70,38 +69,38 @@ $$
 First of all, we calculate all the first-order partial derivatives of the function:  
   
 $$  
-\frac{\partial f_1}{\partial x} = 4x^3 + 3y^2  
+\frac{\partial f_{1}}{\partial x} = 4x^3 + 3y^2  
 $$
 $$  
-\frac{\partial f_1}{\partial y} = 6yx  
+\frac{\partial f_{1}}{\partial y} = 6yx  
 $$
 $$  
-\frac{\partial f_2}{\partial x} = -2y  
+\frac{\partial f_{2}}{\partial x} = -2y  
 $$
 $$  
-\frac{\partial f_2}{\partial y} = 10y - 2x  
+\frac{\partial f_{2}}{\partial y} = 10y - 2x  
 $$
 Now we apply the formula of the Jacobian matrix. In this case, the function has two variables and two vector components, so the Jacobian matrix will be a $2 \times 2$ matrix:  
   $$  
-J_f(x, y) =  
+J_{f}(x, y) =  
 \begin{pmatrix}  
-4x^3 + 3y^2 & 6yx \\  
+4x^3 + 3y^2 & 6yx \\\\  
 -2y & 10y - 2x  
 \end{pmatrix}  
 $$
 Once we have found the expression of the Jacobian matrix, we evaluate it at point (1,2):  
 $$  
-J_f(1,2) =  
+J_{f}(1,2) =  
 \begin{pmatrix}  
-4 \cdot 1^3 + 3 \cdot 2^2 & 6 \cdot 2 \cdot 1 \\  
+4 \cdot 1^3 + 3 \cdot 2^2 & 6 \cdot 2 \cdot 1 \\\\  
 -2 \cdot 2 & 10 \cdot 2 - 2 \cdot 1  
 \end{pmatrix}  
 $$
 And finally, we perform the operations:  
 $$  
-J_f(1,2) =  
+J_{f}(1,2) =  
 \begin{pmatrix}  
-16 & 12 \\  
+16 & 12 \\\\  
 -4 & 18  
 \end{pmatrix}  
 $$
