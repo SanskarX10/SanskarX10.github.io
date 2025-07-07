@@ -273,15 +273,29 @@
                         expandButton.addEventListener('click', () => {
                             fullContent.classList.toggle('hidden');
                             expandButton.textContent = fullContent.classList.contains('hidden') ? 'Read More' : 'Show Less';
+
+                            if (!fullContent.classList.contains('hidden') && !fullContent.dataset.rendered) {
+                                renderMathInElement(fullContent, {
+                                    delimiters: [
+                                        {left: "$$", right: "$$", display: true},
+                                        {left: "$", right: "$", display: false}
+                                    ]
+                                });
+                                fullContent.querySelectorAll('pre code').forEach(block => {
+                                    hljs.highlightElement(block);
+                                });
+                                fullContent.dataset.rendered = 'true';
+                            }
+                        });
+                    } else {
+                        // Render math for short posts immediately
+                        renderMathInElement(postDiv, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false}
+                            ]
                         });
                     }
-
-                    renderMathInElement(postDiv, {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false}
-                        ]
-                    });
                 });
 
                 hljs.highlightAll();
