@@ -48,26 +48,24 @@ time	|- - - - - - - - memory - -          intersection of this diagram is 208
 		------------------------------>
 			num context tokens ( batch size) 
 			
-for a full forward pass, and use rest of the weights, a factor of 6 gets added in both numerator and denominator side (????)
+* for a full forward pass, and use rest of the weights, a factor of 6 gets added in both numerator and denominator side (????)
 
-so for full 52b model, the calculation will be " 6 * for_compute ~= 0.69 seconds" (from [2]) for upto 208 tokens (divide by n if using mutiple gpus) (kv cache computation time ∝ context length)
+* so for full 52b model, the calculation will be " 6 * for_compute ~= 0.69 seconds" (from [2]) for upto 208 tokens (divide by n if using  mutiple gpus) (kv cache computation time ∝ context length)
 	- this 6 comes from 3 q, k, v matmul operations + 2 linear layer operations + 1 output projection and 2 for each multiplication and accumulation (not exact)
 
-kv cache calculation is only 1/6th of work, forward pass cheap due to parellalization , sampling is opposite 
-for one sample step, we have [2] flops
-for full pass, we have 6 * [2] flops 
-thus (not constant) 1/6th of flops * num_tokens can be saved at each steps ; since kv cache stores info for all sequences, as we sample generate seq_len keeps increasing, so work needed is a fraction of original work needed
+* kv cache calculation is only 1/6th of work, forward pass cheap due to parellalization , sampling is opposite 
+* for one sample step, we have [2] flops
+* for full pass, we have 6 * [2] flops 
+* thus (not constant) 1/6th of flops * num_tokens can be saved at each steps ; since kv cache stores info for all sequences, as we sample generate seq_len keeps increasing, so work needed is a fraction of original work needed
 without kv_cache it will be quadratic
 
-capacity:
+## capacity:
 
-kv_cache amd weights are stored in GPU 
-lets say A100 has 40gb VRAM
+* kv_cache amd weights are stored in GPU 
+* lets say A100 has 40gb VRAM
 
-given the model params , to get size in bytes, mutiply params by 2 , 52 billion * 2 = 104e12 =~ 104 gb
-
-so if we had 3 gpus, 120gb of vram , we have 16 gb left for kv_cache, according to [1] the bytes we needs for storage per token are, 2 * 2 * 64 * 8192 ( n_heads * dim_head = d_model) = 2,097,152 bytes ~= 0.002GB per token
-16 / 0.002 -= 8000 tokens can fit into kv_cache for a single gpu ( divide by batch size to get num_tokens for each batch )
+* given the model params , to get size in bytes, mutiply params by 2 , 52 billion * 2 = 104e12 =~ 104 gb
+	- so if we had 3 gpus, 120gb of vram , we have 16 gb left for kv_cache, according to [1] the bytes we needs for storage per token are, 2 * 2 * 64 * 8192 ( n_heads * dim_head = d_model) = 2,097,152 bytes ~= 0.002GB per token , 6 / 0.002 -= 8000 tokens can fit into kv_cache for a single gpu ( divide by batch size to get num_tokens for each batch )
 
 
 
