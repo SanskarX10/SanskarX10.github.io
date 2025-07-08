@@ -10,19 +10,20 @@ Three claims:
    - ex: curve detectors [1], high- and low-frequency detectors [2], pose-invariant body-feature detectors  
 
 2) Features are connected by weights “forming circuits”
-
+```
    early curves → curves → complex shapes  
    (layer 1)     (layer 2)     (layer 3)
-
+```
    The first arrow represents a circuit:
 
+```
    +------------+      +-------------------+      +------------+  
    |            |      |                   |      |            |  
    |  Layer 1   | ---> |  Weights between  | ---> |  Layer 2   |  
    | (features) |      |   (+, –, values)  |      | (features) |  
    |            |      |                   |      |            |  
    +------------+      +-------------------+      +------------+  
-
+```
    + Weights are neurons that fired when the curve was detected.  
    - Weights represent the rest of the space without that curve component.
 
