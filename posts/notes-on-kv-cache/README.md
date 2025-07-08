@@ -2,13 +2,14 @@
 
 process prompt / context > sample additional tokens one by one > perform attention > need of key value pairs for each item in sequence > store these pairs in kv cache to avoid re computation for past tokens
 
+```
 t1, 						## k,v cached ##
 t1, t2,						## k,v cached ##
 t1, t2, t3					## k,v cached ##
-t1, t2, t3, t4				## k,v cached ##
+t1, t2, t3, t4				        ## k,v cached ##
 t1, t2, t3, t4, t5
 t1, t2, t3, t4, t5, t6..
-
+```
 * per token, number of bytes stored => 2 * 2 * num_layers * n_heads * dim_head - [1]
 	- 2 vectors k, value
 	- 16 bits assumption so ( 2 bytes = 16 bits)
@@ -21,33 +22,35 @@ t1, t2, t3, t4, t5, t6..
 	- 2 * num_layers as two operations for k and v then repeat that for n layers
 	- rest d_model^2 comes from [1]
 
-~ flops in matmul : 2mn for (m,n) * (n, 1) , 2mnp for (m,n) * (n, p) : 2 for two operations of * and + in a matmul
+* flops in matmul : 2mn for (m,n) * (n, 1) , 2mnp for (m,n) * (n, p) : 2 for two operations of * and + in a matmul
 
-so for a 52b params model, where d_model is 8192 and num_layers is 64, flops are
+* so for a 52b params model, where d_model is 8192 and num_layers is 64, flops are
 	- 2 * 2 * 64 * 8192 * 8192 = 17,179,869,184
 
-for A100 gpu, where 312e12 FLOPs / sec is speed and 1.5e12 bytes/sec is memory bandwidth, for anthropic 52b:
+* for A100 gpu, where 312e12 FLOPs / sec is speed and 1.5e12 bytes/sec is memory bandwidth, for anthropic 52b:
 	- for_memory : 17,179,869,184 / 1,500,000,000,000 =  0.0114532 seconds
 	- for_compute : 17,179,869,184 / 312,000,000,000,000. = 0.000055 seconds
 	- dividing these (memory/compute) would give us the number 208
 
-~ FLOPS vs memory boundedness
+### FLOPS vs memory boundedness
 	- need to load weight in memory -> costs memory bandwidth
 	- flop bound : nothing is passed into the memory
 	- memory bound : no floperations are happening 
 
-for above hardware the ratio is 208, that mean time taken for k, v computation is equal for 1 or 208 tokens , token < 208 = memory bound, token > 208 = FLOPS bound
+* for above hardware the ratio is 208, that mean time taken for k, v computation is equal for 1 or 208 tokens , token < 208 = memory bound, token > 208 = FLOPS bound
 
-		^				   - 	
+```
+
+		^				    	
 		|             compute
 		|          -
-time	|- - - - - - - - memory - -          intersection of this diagram is 208
+time	        |- - - - - - - - memory - -          intersection of this diagram is 208
 		|     - 
 		|   - 
 		| - 
 		------------------------------>
 			num context tokens ( batch size) 
-			
+```			
 * for a full forward pass, and use rest of the weights, a factor of 6 gets added in both numerator and denominator side (????)
 
 * so for full 52b model, the calculation will be " 6 * for_compute ~= 0.69 seconds" (from [2]) for upto 208 tokens (divide by n if using  mutiple gpus) (kv cache computation time ∝ context length)
@@ -57,7 +60,7 @@ time	|- - - - - - - - memory - -          intersection of this diagram is 208
 * for one sample step, we have [2] flops
 * for full pass, we have 6 * [2] flops 
 * thus (not constant) 1/6th of flops * num_tokens can be saved at each steps ; since kv cache stores info for all sequences, as we sample generate seq_len keeps increasing, so work needed is a fraction of original work needed
-without kv_cache it will be quadratic
+* without kv_cache it will be quadratic
 
 ## capacity:
 
