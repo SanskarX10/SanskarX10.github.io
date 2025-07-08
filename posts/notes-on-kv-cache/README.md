@@ -2,13 +2,14 @@
 
 process prompt / context > sample additional tokens one by one > perform attention > need of key value pairs for each item in sequence > store these pairs in kv cache to avoid re computation for past tokens
 
+```
 t1, 						## k,v cached ##
 t1, t2,						## k,v cached ##
 t1, t2, t3					## k,v cached ##
-t1, t2, t3, t4				## k,v cached ##
+t1, t2, t3, t4				        ## k,v cached ##
 t1, t2, t3, t4, t5
 t1, t2, t3, t4, t5, t6..
-
+```
 * per token, number of bytes stored => 2 * 2 * num_layers * n_heads * dim_head - [1]
 	- 2 vectors k, value
 	- 16 bits assumption so ( 2 bytes = 16 bits)
