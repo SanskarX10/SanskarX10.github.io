@@ -50,9 +50,10 @@ time	        |- - - - - - - - memory - -          intersection of this diagram i
 		| - 
 		------------------------------>
 			num context tokens ( batch size) 
-```			
-* for a full forward pass, and use rest of the weights, a factor of 6 gets added in both numerator and denominator side (????)
+```
 
+  
+* for a full forward pass, and use rest of the weights, a factor of 6 gets added in both numerator and denominator side (????)
 * so for full 52b model, the calculation will be " 6 * for_compute ~= 0.69 seconds" (from [2]) for upto 208 tokens (divide by n if using  mutiple gpus) (kv cache computation time ∝ context length)
 	- this 6 comes from 3 q, k, v matmul operations + 2 linear layer operations + 1 output projection and 2 for each multiplication and accumulation (not exact)
 
