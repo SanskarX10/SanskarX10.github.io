@@ -1,7 +1,7 @@
-#### 2025-07-17
+#### 2025-06-17
 # Learning dynamics of LLM finetuning
 
-[paper link]()
+[paper link](https://arxiv.org/abs/2407.10490)
 
 *   analyzing the step-wise decomposition of how influence accumulates among different potential responses
 *   propose a hypothetical explanation of why specific types of hallucination are strengthened after finetuning
@@ -9,36 +9,43 @@
 
 $$
 \begin{align*}
-% This is the Gradient Descent update rule for the model's parameters (theta).
 \Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_{\theta}(\mathbf{x}_{u}), \mathbf{y}_{u}) \\[1em]
-% This measures the change in the model's prediction on a different input (xo) after the update.
 \Delta f(\mathbf{x}_{o}) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_{o}) - f_{\theta^t}(\mathbf{x}_{o})
 \end{align*}
 $$
 
 After an GD update on $\mathbf{x}_{u}$, how does the model's prediction on $\mathbf{x}_{o}$ change?
-for instance, model learns to map $\mathbf{x}$ to preds $\mathbf{y} = \{y_1, \dots, y_L\}$ for all
+for instance, model learns to map $\mathbf{x}$ to preds $\mathbf{y} = \{y_1, \dots, y_L\}$ for all.
 
-$$
-\begin{array}{ll}
-\textbf{Part 1: Supervised Learning Setup} \\
-\hline \\
-\text{Model Definition:} & h_{\theta}: \mathcal{X} \to \mathbb{R}^{V \times L} \\
-\text{Logits Generation:} & \mathbf{z} = h_{\theta}(\mathbf{x}) \in \mathbb{R}^{V \times L} \\
-\text{Output Prediction:} & \mathbf{y} = \{y_1, \dots, y_L\} \in \mathcal{V}^L \\
-& \quad \text{where } \mathcal{V} \text{ is the vocabulary of size } V \\
-\text{Probability Distribution:} & \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) = \text{Softmax}(\mathbf{z}) \text{ (applied column-wise)} \\
-\text{Model Confidence Metric:} & \log \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) \\[1.5em]
-\textbf{Part 2: Per-step Influence Decomposition} \\
-\hline \\
-\text{Quantity of Interest:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \\
-\text{Definition:} & \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_{o}) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_{o}) \quad \text{(Equation 2)} \\
-\text{Where:} & \\
-\quad \theta_t & \text{Model parameters at training step } t \\
-\quad \theta_{t+1} & \text{Model parameters after one training step} \\
-\quad \mathbf{x}_{o} & \text{An ``observation'' input (data point whose confidence is being tracked)} \\
-\end{array}
-$$
+### Part 1: Supervised Learning Setup
+
+**Model Definition:**
+$$ h_{\theta}: \mathcal{X} \to \mathbb{R}^{V \times L} $$
+
+**Logits Generation:**
+$$ \mathbf{z} = h_{\theta}(\mathbf{x}) \in \mathbb{R}^{V \times L} $$
+
+**Output Prediction:**
+$$ \mathbf{y} = \{y_1, \dots, y_L\} \in \mathcal{V}^L $$
+where $\mathcal{V}$ is the vocabulary of size $V$.
+
+**Probability Distribution:**
+$$ \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) = \text{Softmax}(\mathbf{z}) \text{ (applied column-wise)} $$
+
+**Model Confidence Metric:**
+$$ \log \pi_{\theta}(\mathbf{y} \mid \mathbf{x}) $$
+
+### Part 2: Per-step Influence Decomposition
+
+**Quantity of Interest:**
+$$ \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) $$
+
+**Definition:**
+$$ \Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_{o}) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_{o}) $$
+Where:
+*   $\theta_t$ is the model parameters at training step $t$.
+*   $\theta_{t+1}$ is the model parameters after one training step.
+*   $\mathbf{x}_{o}$ is an "observation" input (data point whose confidence is being tracked).
 
 observation is change in log probability after one step of training
 one step learning dynamic can be written as
@@ -50,7 +57,7 @@ $$
 *   **K** is the similarity term, or Empirical Neural Tangent Kernel {appendix below}, how aligned gradients for $\mathbf{x}_{o}$ and $\mathbf{x}_{u}$ are
 *   **A** is the gradient of log- probability wrt to logits for $\mathbf{x}_{o}$ (observable example)
 
-change in confidence on $\mathbf{x}_{o}$ is proportional to error on training example $\mathbf{x}_{u}$, multiplied by how similar the model thinks $\mathbf{x}_{o}$ and $\mathbf{x}_{u}$ are which the acts on the current state of the $\mathbf{x}_{o}$ prediction.
+change in confidence on $\mathbf{x}_{o}$ is proportional to error on training example $\mathbf{x}_{u}$, multiplied by how similar the model thinks $\mathbf{x}_{o}$ and $\mathbf{x}_{u}$ are which the acts on the current state of the $\mathbf{x}_{o}$ prediction
 
 ## Neural Tangent Kernel
 
