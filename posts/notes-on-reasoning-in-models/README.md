@@ -31,13 +31,13 @@ problem > N partial solutions > PRM returns probablility of each step to reach t
 
 Majority Voting : a simple baseline - generate N solutions pick most frequent answer
 
-Best of N :
+ - ### Best of N :
 	- vanilla: N generation , choose max(RM reward) as answer
 	- weighted: aggregate answer among identical responses , return max(total RM reward) 
 		- typically ORMs should be used to reward final answer but same PRM is used here on last step
 		
 	
-Beam Search:
+ - ### Beam Search:
 	- gemerate N beams, sample N steps at temp T , score with PRM , select top N/M steps as candidate for next generation (M is beam width here) , terminate on eos or depth
 	
 ----------------------------------------------------------------------------------------------------------------------------------------------------
