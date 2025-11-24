@@ -8,12 +8,12 @@
 
 $$
 \begin{aligned}
-\Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_{\theta}(\mathbf{x}_u), \mathbf{y}_u) \\[1em]
-\Delta f(\mathbf{x}_o) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_o) - f_{\theta^t}(\mathbf{x}_o)
+\Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_{\theta}(\mathbf{x}_{u}), \mathbf{y}_{u}) \\[1em]
+\Delta f(\mathbf{x}_{o}) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_{o}) - f_{\theta^t}(\mathbf{x}_{o})
 \end{aligned}
 $$
 
-* After a GD update on $\mathbf{x}_u$, how does the model's prediction on $\mathbf{x}_o$ change?
+* After a GD update on $\mathbf{x}_{u}$, how does the model's prediction on $\mathbf{x}_{o}$ change?
 * for instance, model learns to map $\mathbf{x}$ to preds $\mathbf{y} = \{y_1, \dots, y_L\}$ for all  
 
 ---
@@ -34,18 +34,18 @@ $$
 
 | | |
 |---|---|
-| **Quantity of Interest:** | $\Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_o)$ |
+| **Quantity of Interest:** | $\Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o})$ |
 
 **Definition:**
 
 $$
-\Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_o) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_o) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_o)
+\Delta \log \pi^t(\mathbf{y} \mid \mathbf{x}_{o}) \triangleq \log \pi_{\theta_{t+1}}(\mathbf{y} \mid \mathbf{x}_{o}) - \log \pi_{\theta_t}(\mathbf{y} \mid \mathbf{x}_{o})
 $$
 
 **Where:**
 - $\theta_t$ is the model parameters at training step $t$
 - $\theta_{t+1}$ is the model parameters after one training step
-- $\mathbf{x}_o$ is an "observation" input (data point whose confidence is being tracked)
+- $\mathbf{x}_{o}$ is an "observation" input (data point whose confidence is being tracked)
 
 ---
 
@@ -53,13 +53,13 @@ $$
 * one step learning dynamic can be written as
 
 $$
-\Delta \log \pi^t(y \mid \mathbf{x}_o) = -\eta \, A^t(\mathbf{x}_o) \, K^t(\mathbf{x}_o, \mathbf{x}_u) \, G^t(\mathbf{x}_u, \mathbf{y}_u) + O(\eta^2 \|\nabla_{\theta} z(\mathbf{x}_u)\|^{2}_{\text{op}})
+\Delta \log \pi^t(y \mid \mathbf{x}_{o}) = -\eta \, A^t(\mathbf{x}_{o}) \, K^t(\mathbf{x}_{o}, \mathbf{x}_{u}) \, G^t(\mathbf{x}_{u}, \mathbf{y}_{u}) + O(\eta^2 \|\nabla_{\theta} z(\mathbf{x}_{u})\|^{2}_{\text{op}})
 $$
 
 * **G** is the energy term, gradient of loss wrt logits for $(\mathbf{x}_u, \mathbf{y}_u)$ — if model is very wrong on a class, then this will be large
-* **K** is the similarity term, or Empirical Neural Tangent Kernel {<span style="color:rgb(251, 177, 203)">appendix below</span>}, how aligned gradients for $\mathbf{x}_o$ and $\mathbf{x}_u$ are
-* **A** is the gradient of log-probability wrt to logits for $\mathbf{x}_o$ (observable example) 
-* change in confidence on $\mathbf{x}_o$ is proportional to error on training example $\mathbf{x}_u$, multiplied by how similar the model thinks $\mathbf{x}_o$ and $\mathbf{x}_u$ are, which then acts on the current state of the $\mathbf{x}_o$ prediction.
+* **K** is the similarity term, or Empirical Neural Tangent Kernel {<span style="color:rgb(251, 177, 203)">appendix below</span>}, how aligned gradients for $\mathbf{x}_{o}$ and $\mathbf{x}_{u}$ are
+* **A** is the gradient of log-probability wrt to logits for $\mathbf{x}_{o}$ (observable example) 
+* change in confidence on $\mathbf{x}_{o}$ is proportional to error on training example $\mathbf{x}_{u}$, multiplied by how similar the model thinks $\mathbf{x}_{o}$ and $\mathbf{x}_{u}$ are, which then acts on the current state of the $\mathbf{x}_{o}$ prediction.
 
 -----------------------------------------------------------------
 
@@ -80,48 +80,48 @@ $$
   
 **Find the Jacobian matrix at the point (1,2) of the following function:**
   
-$$  
-f(x, y) = (x^4 + 3y^2 x,\ 5y^2 - 2xy + 1)  
-$$  
+$$
+f(x, y) = (x^4 + 3y^2 x,\ 5y^2 - 2xy + 1)
+$$
   
 First of all, we calculate all the first-order partial derivatives of the function:  
   
-$$  
+$$
 \frac{\partial f_1}{\partial x} = 4x^3 + 3y^2 \qquad \frac{\partial f_1}{\partial y} = 6yx
 $$
 
-$$  
-\frac{\partial f_2}{\partial x} = -2y \qquad \frac{\partial f_2}{\partial y} = 10y - 2x  
+$$
+\frac{\partial f_2}{\partial x} = -2y \qquad \frac{\partial f_2}{\partial y} = 10y - 2x
 $$
 
 Now we apply the formula of the Jacobian matrix. In this case, the function has two variables and two vector components, so the Jacobian matrix will be a $2 \times 2$ matrix:  
 
-$$  
+$$
 J_f(x, y) =
-\begin{pmatrix}  
-4x^3 + 3y^2 & 6yx \\  
--2y & 10y - 2x  
-\end{pmatrix}  
+\begin{pmatrix}
+4x^3 + 3y^2 & 6yx \\
+-2y & 10y - 2x
+\end{pmatrix}
 $$
 
 Once we have found the expression of the Jacobian matrix, we evaluate it at point $(1,2)$:  
 
-$$  
+$$
 J_f(1,2) =
-\begin{pmatrix}  
-4 \cdot 1^3 + 3 \cdot 2^2 & 6 \cdot 2 \cdot 1 \\  
--2 \cdot 2 & 10 \cdot 2 - 2 \cdot 1  
-\end{pmatrix}  
+\begin{pmatrix}
+4 \cdot 1^3 + 3 \cdot 2^2 & 6 \cdot 2 \cdot 1 \\
+-2 \cdot 2 & 10 \cdot 2 - 2 \cdot 1
+\end{pmatrix}
 $$
 
 And finally, we perform the operations:  
 
-$$  
+$$
 J_f(1,2) =
-\begin{pmatrix}  
-16 & 12 \\  
--4 & 18  
-\end{pmatrix}  
+\begin{pmatrix}
+16 & 12 \\
+-4 & 18
+\end{pmatrix}
 $$
 
 * a kernel is a similarity function between two data points, some kernels can be decomposed into two feature maps
