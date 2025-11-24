@@ -8,14 +8,13 @@
 
 $$
 \begin{align*}
-% This is the Gradient Descent update rule for the model's parameters (theta).
 \Delta\theta &\triangleq \theta^{t+1} - \theta^t = -\eta \cdot \nabla_{\theta} L(f_{\theta}(\mathbf{x}_{u}), \mathbf{y}_{u}) \\\\[1em]
-% This measures the change in the model's prediction on a different input (xo) after the update.
 \Delta f(\mathbf{x}_{o}) &\triangleq f_{\theta^{t+1}}(\mathbf{x}_{o}) - f_{\theta^t}(\mathbf{x}_{o})
 \end{align*}
 $$
 * After an GD update on xu​, how does the model's prediction on xo​ change?
 * for instance, model learns to map x to preds y = {y1, ...... y L} for all  
+
 $$
 \begin{array}{ll}
 {\textbf{Part 1: Supervised Learning Setup}} \\\\
